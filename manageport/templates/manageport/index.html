@@ -6,29 +6,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Iot</title>
-    <!-- <link rel="stylesheet" href="{% static 'manageport/index.css' %}"> -->
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="{% static 'manageport/index.css' %}">
+    <!-- <link rel="stylesheet" href="index.css"> -->
 </head>
 
 <body>
 
     <div id="center-div">
 
-        <!-- {% for key, value in data_list.items %}  -->
+        {% for key, value in data_list.items %} 
         <div id="container">
             <div id="description">
-                id : 1
-                        <!-- {{ key }} -->
+                <!-- id : 1  -->
+                        {{ key }}
             </div>
             <button-div>
-                <!-- {% if value == True %} -->
-                <!-- <button class = "button">Turn off</button> -->
-                <!-- {% else %} -->
-                <button class = "button">Turn On</button>
-                <!-- {% endif %} -->
+                {% if value == True %}
+                <form method="post" action="{% url 'manageport' %}">
+                    {% csrf_token %}
+                        <button class = "button" type="submit" name="port_update" value="off {{ key }}">Turn off</button>
+                        {% else %}
+                        <button class = "button" type="submit" name="port_update" value="on {{ key }}">Turn On</button>
+                </form>
+                {% endif %}
             </button-div>
         </div>
-        <!-- {% endfor %} -->
+        {% endfor %}
     </div>
 </body>
 </html>
