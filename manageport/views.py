@@ -15,6 +15,8 @@ def access(request, id):
 def render_manageport(request):
     if request.method == 'POST':
         print('es')
+        button_value = request.POST.get('port_update')
+        print(button_value)
     
     # print("no")
     # print(request)
