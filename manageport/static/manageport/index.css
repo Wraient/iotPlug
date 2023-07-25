@@ -3,7 +3,7 @@ body{
 }
 
 
-#center-div{
+.center-div{
     width: 80%;
     height: 70%;
     background-color: rgb(84,84,84);
@@ -24,7 +24,7 @@ body{
 }
 
 
-#container{
+.everything-container{
     background-color: rgb(96, 96, 99);
     border: black 1px solid;
     border-radius: 10px;
@@ -67,9 +67,54 @@ button {
     font-size: 1.5vw;
 }
 
+  
+/* Style the container with rounded corners and padding */
+div {
+  position: relative; /* Ensure relative positioning for pseudo-elements */
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
+  /* Add other styles for the container */
+}
+
+/* Hide the default scrollbar */
+div::-webkit-scrollbar {
+  width: 16px; /* Reduced width for the scrollbar */
+  background-color: transparent;
+  /* background-color: #252424; */
+}
+
+/* Style the scrollbar thumb for WebKit-based browsers */
+div::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+  /* Reduced height for the scrollbar thumb */
+  height: 20px;
+}
+
 @media (max-width: 480px) {
     body {
         background-color: black;
+    }
+
+    .center-div{
+        width: initial;
+        height: initial;
+        background-color: initial;
+        position: initial;
+        border: initial;
+        border-radius: initial;
+
+        overflow-x: initial;
+        padding-left: initial;
+        padding-right: initial;
+        overflow-y: initial;
+        margin: initial;
+        padding-top: initial;
+        padding-bottom: initial;
+        position: relative;
+        top: 200px;
+        bottom:30px;
     }
 
     #description{
@@ -77,8 +122,12 @@ button {
         margin-left: 2%;
     }
 
-    #container{
+    .everything-container{
         height:15vw;
+    }
+
+    div::-webkit-scrollbar {
+        width:10px;
     }
 
     button{

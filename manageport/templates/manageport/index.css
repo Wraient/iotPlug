@@ -24,7 +24,7 @@ body{
 }
 
 
-#container{
+.everything-container{
     background-color: rgb(96, 96, 99);
     border: black 1px solid;
     border-radius: 10px;
@@ -77,7 +77,7 @@ button {
         margin-left: 2%;
     }
 
-    #container{
+    .everything-container{
         height:15vw;
     }
 

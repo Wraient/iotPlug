@@ -1,4 +1,4 @@
-<!-- {% load static %} -->
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,32 +6,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Iot</title>
-    <link rel="stylesheet" href="{% static 'manageport/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'manageport/index.css' %}">
+    <script>
+        // Function to reload the page and store the scroll position in session storage
+        function reloadPage() {
+          sessionStorage.setItem('scrollPosition', document.getElementById('scrollContainer').scrollTop);
+          location.reload();
+        }
+    
+        // Function to read the stored scroll position and scroll the specific div to that position
+        function restoreScrollPosition() {
+          var scrollPosition = sessionStorage.getItem('scrollPosition');
+          if (scrollPosition) {
+            document.getElementById('scrollContainer').scrollTop = scrollPosition;
+          }
+          // Clear the stored scroll position after using it
+          sessionStorage.removeItem('scrollPosition');
+        }
+    
+        // Call the restoreScrollPosition function when the page loads
+        window.onload = function () {
+          restoreScrollPosition();
+        };
+      </script>
     <!-- <link rel="stylesheet" href="index.css"> -->
 </head>
 
 <body>
 
-    <div id="center-div">
+    <div class="center-div" >
+        <div id="scrollContainer">
 
-        {% for key, value in data_list.items %} 
-        <div id="container">
-            <div id="description">
-                <!-- id : 1  -->
+            <form method="post" action="{% url 'manageport' %}">
+                {% csrf_token %}
+            {% for key, value in data_list.items %} 
+                <div class="everything-container"  id="{{key}}">
+                    <div id="description">
+                        <!-- id : 1  -->
                         {{ key }}
-            </div>
-            <button-div>
-                {% if value == True %}
-                <form method="post" action="{% url 'manageport' %}">
-                    {% csrf_token %}
-                        <button class = "button" type="submit" name="port_update" value="off {{ key }}">Turn off</button>
-                        {% else %}
-                        <button class = "button" type="submit" name="port_update" value="on {{ key }}">Turn On</button>
-                </form>
-                {% endif %}
-            </button-div>
+                    </div>
+                    <button-div>
+                        {% if value == True %}
+                            <button class = "button" type="submit" name="port_update" value="off {{ key }}" onclick="reloadPage()">Turn off</button>
+                            {% else %}
+                            <button class = "button" type="submit" name="port_update" value="on {{ key }}" onclick="reloadPage()">Turn on</button>
+                            {% endif %}
+                    </button-div>
+                </div>
+            {% endfor %}
+            </form>
         </div>
-        {% endfor %}
     </div>
 </body>
 </html>
