@@ -46,7 +46,7 @@
                         {{ key }}
                     </div>
                     <button-div>
-                        {% if value == True %}
+                        {% if value == 1 %}
                             <button class = "button" type="submit" name="port_update" value="off {{ key }}" onclick="reloadPage()">Turn off</button>
                             {% else %}
                             <button class = "button" type="submit" name="port_update" value="on {{ key }}" onclick="reloadPage()">Turn on</button>
