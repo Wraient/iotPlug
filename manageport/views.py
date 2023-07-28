@@ -29,8 +29,6 @@ def port_update(button_value):
         action = False
     else: 
         action = True
-    data[key] = action
-    print(data)
     print(key, action)
 
     update_product_state(key, action)

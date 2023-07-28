@@ -34,9 +34,7 @@
 
 <body>
 
-    <div class="center-div" >
-        <div id="scrollContainer">
-
+    <div class="center-div" id="scrollContainer">
             <form method="post" action="{% url 'manageport' %}">
                 {% csrf_token %}
             {% for key, value in data_list.items %} 
@@ -55,7 +53,6 @@
                 </div>
             {% endfor %}
             </form>
-        </div>
     </div>
 </body>
 </html>
