@@ -11,7 +11,6 @@ from .db_query_handler import update_product_state, view_db, get_product_data
 # Create your views here.
 
 
-data = {"1": True, "2": False, "3": False, "4": False, "5": False, "6": False, "7": False, "8": False, "9": False, "10": False}
 def db_data_for_page():
     the_data = get_product_data()
     return_data = {}
@@ -19,7 +18,6 @@ def db_data_for_page():
         return_data.update({str(package[1]) : package[0]})
 
     return return_data
-# data = {"1": True, }
 
 
 def port_update(button_value):
