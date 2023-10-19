@@ -19,11 +19,13 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 from api.views import ProductViewSet
+from . import views
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
 
 urlpatterns = [
+    path("", views.index),
     path('admin/', admin.site.urls),
     path('manageport/', include("manageport.urls")),
     path('api/', include(router.urls)),
