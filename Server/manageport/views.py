@@ -1,13 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.contrib import admin
 from .models import Appliance
 from django.http import JsonResponse
 
 
 # Create your views here.
-
 def port_update_new(button_value):
     instance_to_edit = Appliance.objects.get(pk=button_value.split()[1])
     if button_value.split()[0] == 'on':
@@ -19,7 +16,7 @@ def port_update_new(button_value):
     print(view_db_new)
 
 def access(request, id):
-    return HttpResponse(id)
+    return HttpResponse(Appliance.objects.get(pk=id))
 
 def render_manageport(request):
     # print(request)
