@@ -2,40 +2,21 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from api.views import ProductViewSet
-from api.models import Product
-from .db_query_handler import update_product_state, view_db, get_product_data
+from .models import Appliance
+from django.http import JsonResponse
+
 
 # Create your views here.
 
-
-def db_data_for_page():
-    the_data = get_product_data()
-    return_data = {}
-    for package in the_data:
-        return_data.update({str(package[1]) : package[0]})
-
-    return return_data
-
-
-def port_update(button_value):
-    print(button_value)
-    given_data = button_value.split()
-    action = given_data[0]
-    key = given_data[1]
-    if action == "off": 
-        action = False
-    else: 
-        action = True
-    print(key, action)
-
-    update_product_state(key, action)
-    view_db()
-
-    print('clicked')
-
+def port_update_new(button_value):
+    instance_to_edit = Appliance.objects.get(pk=button_value.split()[1])
+    if button_value.split()[0] == 'on':
+        instance_to_edit.state = True
+    else:
+        instance_to_edit.state = False
+    
+    instance_to_edit.save()
+    print(view_db_new)
 
 def access(request, id):
     return HttpResponse(id)
@@ -43,19 +24,27 @@ def access(request, id):
 def render_manageport(request):
     # print(request)
     if request.method == 'POST':
-        # print('clicked')
-        button_value = request.POST.get('port_update')
-        port_update(button_value)
-        # return redirect("/manageport/#"+button_value.split()[1])
-    # print(data)
+        button_value = request.POST.get('port_update') # 'off 1' or 'on 1'
+        port_update_new(button_value)
 
-        # print(button_value)
-    
-    # print("no")
-    # print(request)
     return render(request, 'manageport/index.html', {
-        "data_list":db_data_for_page()
+        "data_list":return_data_for_page()
     })
 
-def render_404(request, string):
-    return HttpResponse("<h1>error 404<h1>")
+# {'1': 1, '2': 0, '3': 1, '4': 1} at return data in db_data_for_page
+def return_data_for_page():
+    data = list(Appliance.objects.values()) # [{'id': 1, 'state': True}, {'id': 2, 'state': True}]
+    return_data = {}
+    for i in range(len(data)):
+        return_data[str(data[i]["id"])] = int(data[i]["state"])
+    return return_data  
+
+def view_db_new(request):
+    for i in Appliance.objects.all():
+        print(i)
+
+def view_data_json(request):
+    data = list(Appliance.objects.values())  # Query all instances and convert to a list of dictionaries
+    return JsonResponse({'data': data})
+
+# get [{"id":1,"state":true},{"id":2,"state":false},{"id":3,"state":true},{"id":4,"state":true}] at api/products/?format=json
