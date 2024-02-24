@@ -7,52 +7,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Iot</title>
     <link rel="stylesheet" type="text/css" href="{% static 'manageport/index.css' %}">
-    <script>
-        // Function to reload the page and store the scroll position in session storage
-        function reloadPage() {
-          sessionStorage.setItem('scrollPosition', document.getElementById('scrollContainer').scrollTop);
-          location.reload();
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        /* Switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
         }
-    
-        // Function to read the stored scroll position and scroll the specific div to that position
-        function restoreScrollPosition() {
-          var scrollPosition = sessionStorage.getItem('scrollPosition');
-          if (scrollPosition) {
-            document.getElementById('scrollContainer').scrollTop = scrollPosition;
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Media query for smaller screen sizes */
+        @media only screen and (max-width: 600px) {
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 70px;
+              height: 25px;
           }
-          // Clear the stored scroll position after using it
-          sessionStorage.removeItem('scrollPosition');
+            .slider:before {
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+            }
         }
-    
-        // Call the restoreScrollPosition function when the page loads
-        window.onload = function () {
-          restoreScrollPosition();
-        };
-      </script>
-    <!-- <link rel="stylesheet" href="index.css"> -->
+    </style>
 </head>
 
 <body>
-
     <div class="center-div" id="scrollContainer">
-            <form method="post" action="{% url 'manageport' %}">
-                {% csrf_token %}
-            {% for key, value in data_list.items %} 
+        <form id="applianceForm" method="post" action="{% url 'manageport' %}">
+          <!-- {{ data_list }} -->
+            {% csrf_token %}
+            {% for appliance in appliances %}
+              {% with appliance.id as key %}
+              {% with appliance.name as name_value %}
+              {% with appliance.state as state_value %}
+
                 <div class="everything-container"  id="{{key}}">
                     <div id="description">
-                        <!-- id : 1  -->
-                        {{ key }}
+                        {{ name_value }}
                     </div>
-                    <button-div>
-                        {% if value == 1 %}
-                          <button class = "button" type="submit" name="port_update" value="off {{ key }}" onclick="reloadPage()">Turn on</button>
-                          {% else %}
-                          <button class = "button" type="submit" name="port_update" value="on {{ key }}" onclick="reloadPage()">Turn off</button>
-                        {% endif %}
-                    </button-div>
+                    <label class="switch">
+                        <input id="appliance{{ key }}" type="checkbox" {% if state_value == 1 %} checked {% endif %} name="port_update" state_value="{% if state_value == 1 %}off{% else %}on{% endif %} {{ key }}">
+                        <span class="slider"></span>
+                    </label>
                 </div>
+              {% endwith %}
+              {% endwith %}
+              {% endwith %}
             {% endfor %}
-            </form>
+        </form>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $(".switch input").change(function() {
+                var isChecked = $(this).is(":checked");
+                var applianceId = $(this).attr("id").replace("appliance", "");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'manageport' %}",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                        port_update: isChecked ? "on " + applianceId : "off " + applianceId
+                    },
+                    success: function(data) {
+                        // Handle success response if needed
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response if needed
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -3,17 +3,19 @@ from django.http import HttpResponse
 from .models import Appliance
 from django.http import JsonResponse
 
-
 # Create your views here.
 def port_update_new(button_value):
+    print("button value:",button_value)
     instance_to_edit = Appliance.objects.get(pk=button_value.split()[1])
+    print("insatance: ", instance_to_edit)
     if button_value.split()[0] == 'on':
         instance_to_edit.state = True
     else:
         instance_to_edit.state = False
     
     instance_to_edit.save()
-    print(view_db_new)
+    instance_to_edit.save()
+    print("updated database: ", view_db_new)
 
 def access(request, id):
     return HttpResponse(Appliance.objects.get(pk=id))
@@ -23,18 +25,19 @@ def render_manageport(request):
     if request.method == 'POST':
         button_value = request.POST.get('port_update') # 'off 1' or 'on 1'
         port_update_new(button_value)
-
+    # print(return_data_for_page())
     return render(request, 'manageport/index.html', {
-        "data_list":return_data_for_page()
+        "appliances":return_data_for_page()
     })
 
-# {'1': 1, '2': 0, '3': 1, '4': 1} at return data in db_data_for_page
+# {"data": [{"id": 1, "name": "Kids Room Camera"}, ... ]} at return data in db_data_for_page
 def return_data_for_page():
     data = list(Appliance.objects.values()) # [{'id': 1, 'state': True}, {'id': 2, 'state': True}]
-    return_data = {}
-    for i in range(len(data)):
-        return_data[str(data[i]["id"])] = int(data[i]["state"])
-    return return_data  
+    # print(data)
+    # return_data = {}
+    # for i in range(len(data)):
+    #     return_data = [str(data[i]["name"])] = int(data[i]["state"])
+    return data
 
 def view_db_new(request):
     for i in Appliance.objects.all():
@@ -44,4 +47,4 @@ def view_data_json(request):
     data = list(Appliance.objects.values())  # Query all instances and convert to a list of dictionaries
     return JsonResponse({'data': data})
 
-# get [{"id":1,"state":true},{"id":2,"state":false},{"id":3,"state":true},{"id":4,"state":true}] at api/products/?format=json
+# get {"data": [{"id": 1, "name": "Kids Room Camera", "state": false}, {"id": 2, "name": "School Computers", "state": false}, {"id": 3, "name": "Bedroom Lights", "state": false}, {"id": 4, "name": "Hall TV", "state": true}]}
