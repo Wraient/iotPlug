@@ -71,25 +71,25 @@ void loop() {
           bool state = product["state"];
 
           if (id == "1") {
-              if (state == false) {
+              if (state == true) {
                   turnOnPort(D1);
               } else {
                   turnOffPort(D1);
               }
           } else if (id == "2") {
-              if (state == false) {
+              if (state == true) {
                   turnOnPort(D2);
               } else {
                   turnOffPort(D2);
               }
           } else if (id == "3") {
-              if (state == false) {
+              if (state == true) {
                   turnOnPort(D3);
               } else {
                   turnOffPort(D3);
               }
           } else if (id == "4") {
-              if (state == false) {
+              if (state == true) {
                   turnOnPort(D4);
               } else {
                   turnOffPort(D4);
@@ -116,9 +116,9 @@ void loop() {
   }
 }
 void turnOnPort(int id) {
-  digitalWrite(id, HIGH);
+  digitalWrite(id, LOW);
 }
 
 void turnOffPort(int id) {
-  digitalWrite(id, LOW);
+  digitalWrite(id, HIGH);
 }
