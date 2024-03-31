@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
+#include <WiFiClientSecure.h>  // Include WiFiClientSecure library
 #include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
 
@@ -9,16 +9,11 @@
 #define D4 2
 
 const char* ssid = "Rushi";
-const char* password = "mini1111";
-const char* apiEndpoint = "https://selfish-mole-81.telebit.io/manageport/show_data/";
+const char* password = "arduinopassword";
+const char* apiEndpoint = "https://www.devrushi.me/manageport/show_data/";
 
-// Flag to indicate a secure connection
-bool secure = true;
+WiFiClientSecure wifiClient;  // Use WiFiClientSecure instead of WiFiClient
 
-// Declare WiFiClientSecure
-WiFiClientSecure wifiClient;
-
-// Function prototypes
 void turnOnPort(int id);
 void turnOffPort(int id);
 
@@ -44,12 +39,11 @@ void setup() {
 
 void loop() {
   if (WiFi.status() == WL_CONNECTED) {
+
+    wifiClient.setInsecure();
     HTTPClient http;
     http.setTimeout(10000);
-
-    // Set up WiFiClientSecure for a secure connection
-    wifiClient.setInsecure();
-
+    // Use wifiClient for secure connection
     http.begin(wifiClient, apiEndpoint);
 
     int httpCode = http.GET();
@@ -58,7 +52,7 @@ void loop() {
       String payload = http.getString();
       String jsonString = payload;
 
-      const size_t bufferSize = JSON_ARRAY_SIZE(1) + 4 * JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 50;
+      const size_t bufferSize = 2 * JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(3) + 100;
       DynamicJsonDocument jsonBuffer(bufferSize);
 
       DeserializationError error = deserializeJson(jsonBuffer, jsonString);
@@ -69,58 +63,58 @@ void loop() {
         return;
       }
 
-      // Ensure that JSON data contains "data" key and it's an array
-      if (jsonBuffer.containsKey("data") && jsonBuffer["data"].is<JsonArray>()) {
+      if (jsonBuffer.containsKey("data")) {
         JsonArray productsArray = jsonBuffer["data"].as<JsonArray>();
 
         for (JsonObject product : productsArray) {
-          const int id = product["id"];
+          String id = product["id"].as<String>(); // Convert ID to string
           bool state = product["state"];
 
-          // Perform actions based on received data
-          // (e.g., turn on/off ports)
-          if (id == 1) {
-            if (state == true) {
-              turnOnPort(D1);
-            } else {
-              turnOffPort(D1);
-            }
-          } else if (id == 2) {
-            if (state == true) {
-              turnOnPort(D2);
-            } else {
-              turnOffPort(D2);
-            }
-          } else if (id == 3) {
-            if (state == true) {
-              turnOnPort(D3);
-            } else {
-              turnOffPort(D3);
-            }
-          } else if (id == 4) {
-            if (state == true) {
-              turnOnPort(D4);
-            } else {
-              turnOffPort(D4);
-            }
+          if (id == "1") {
+              if (state == false) {
+                  turnOnPort(D1);
+              } else {
+                  turnOffPort(D1);
+              }
+          } else if (id == "2") {
+              if (state == false) {
+                  turnOnPort(D2);
+              } else {
+                  turnOffPort(D2);
+              }
+          } else if (id == "3") {
+              if (state == false) {
+                  turnOnPort(D3);
+              } else {
+                  turnOffPort(D3);
+              }
+          } else if (id == "4") {
+              if (state == false) {
+                  turnOnPort(D4);
+              } else {
+                  turnOffPort(D4);
+              }
           }
 
-          Serial.println("ID: " + String(id));
-          Serial.println("State: " + String(state));
-          Serial.println("-------------------");
+          // Your existing logic for processing JSON data
+
+          // Serial.println("ID: " + id);
+          // Serial.println("State: " + String(state));
+          // Serial.println("-------------------");
         }
       } else {
-        Serial.println("Invalid JSON structure. No 'data' array found.");
+        Serial.println("JSON data does not contain 'data' key or is not formatted as expected.");
       }
+
     } else {
       Serial.printf("HTTP GET request failed, error code: %d\n", httpCode);
     }
 
     http.end();
-    delay(500);  // Wait for 5 seconds before making the next request
+
+    // delay();  // Wait for 5 seconds before making the next request
   }
 }
-
 void turnOnPort(int id) {
   digitalWrite(id, HIGH);
 }
